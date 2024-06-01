@@ -7,12 +7,15 @@ import {
 import { PredictService } from './predict.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ModelService } from 'src/module/model.service';
+import { FirestoreService } from 'src/firestore/firestore.service';
+import * as crypto from 'crypto';
 
 @Controller('predict')
 export class PredictController {
   constructor(
     private readonly predictService: PredictService,
     private readonly modelService: ModelService,
+    private readonly firestoreService: FirestoreService,
   ) {}
 
   @Post()
@@ -39,15 +42,14 @@ export class PredictController {
       createdAt: createdAt,
     };
 
-    // console.log(data);
-    // await storeData(id, data);
+    await this.firestoreService.uploadData('predictions', id, data);
 
     const response = {
       status: 'success',
       message:
         confidenceScore > 99
-          ? 'Model is predicted successfully.'
-          : 'Model is predicted successfully but under threshold. Please use the correct picture',
+          ? 'Model predicted successfully.'
+          : 'Model predicted successfully but confidence is low. Please use a better image.',
       data,
     };
 

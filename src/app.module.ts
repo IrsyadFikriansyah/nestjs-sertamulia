@@ -1,12 +1,15 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { FirestoreModule } from './firestore/firestore.module';
 import { PredictModule } from './predict/predict.module';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [PredictModule, ConfigModule.forRoot({ cache: true })],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    FirestoreModule,
+    PredictModule,
+  ],
 })
 export class AppModule {}
